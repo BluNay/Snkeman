@@ -23,9 +23,11 @@ class Snake:
         self.color = PURPLE
         self.game_started = False
 
+    # Méthode pour obtenir la position de la tête du serpent
     def get_head_position(self):
         return self.positions[0]
 
+    # Méthode pour tourner le serpent dans une nouvelle direction
     def turn(self, point):
         if self.length > 1 and (point[0] * -1, point[1] * -1) == self.direction:
             return
@@ -33,6 +35,7 @@ class Snake:
             self.direction = point
             self.game_started = True  # Marquer que le jeu a commencé
 
+    # Méthode pour déplacer le serpent
     def move(self):
         if not self.game_started:
             return  # Ne rien faire si le jeu n'a pas encore commencé
@@ -50,7 +53,7 @@ class Snake:
                 self.positions.pop()
             return True
 
-    # Dans la classe Snake
+    # Méthode pour réinitialiser le serpent
     def reset(self):
         self.length = 1
         self.positions = [((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))]
@@ -58,28 +61,14 @@ class Snake:
         self.game_started = False  # Remettre à False lorsque le jeu est réinitialisé
         return True  # Retourner True pour indiquer que le jeu a été réinitialisé
 
-    # Dans la boucle principale
-
-    # Déplacement du serpent
-    if snake.move():
-        # Collision avec la nourriture
-        if snake.get_head_position() == food.position:
-            snake.length += 1
-            score += 1
-            if score > best_score:
-                best_score = score
-                save_best_score(best_score)  # Enregistrer le nouveau meilleur score
-            food.randomize_position()
-    else:
-        if not snake.reset():
-            score = 0  # Réinitialiser le score uniquement si le jeu n'a pas été réinitialisé
-
+    # Méthode pour dessiner le serpent sur l'écran
     def draw(self, surface):
         for p in self.positions:
             r = pygame.Rect((p[0], p[1]), (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(surface, self.color, r)
             pygame.draw.rect(surface, WHITE, r, 1)
 
+    # Méthode pour gérer les touches du clavier
     def handle_keys(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
@@ -91,7 +80,6 @@ class Snake:
         elif keys[pygame.K_RIGHT]:
             self.turn(RIGHT)
 
-
 # Définition de la classe Food
 class Food:
     def __init__(self):
@@ -99,10 +87,12 @@ class Food:
         self.color = RED
         self.randomize_position()
 
+    # Méthode pour définir une nouvelle position pour la nourriture
     def randomize_position(self):
         self.position = (random.randint(0, (SCREEN_WIDTH - GRID_SIZE) // GRID_SIZE) * GRID_SIZE,
                          random.randint(0, (SCREEN_HEIGHT - GRID_SIZE) // GRID_SIZE) * GRID_SIZE)
 
+    # Méthode pour dessiner la nourriture sur l'écran
     def draw(self, surface):
         r = pygame.Rect((self.position[0], self.position[1]), (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(surface, self.color, r)
@@ -126,6 +116,7 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
     surface = pygame.Surface(screen.get_size())
     surface = surface.convert()
+    
     snake = Snake()
     food = Food()
     score = 0
@@ -136,39 +127,25 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        # Gestion des touches
         snake.handle_keys()
         
-        # Déplacement du serpent
         if snake.move():
-            # Collision avec la nourriture
             if snake.get_head_position() == food.position:
                 snake.length += 1
                 score += 1
                 if score > best_score:
                     best_score = score
-                    save_best_score(best_score)  # Enregistrer le nouveau meilleur score
+                    save_best_score(best_score)
                 food.randomize_position()
         
-        # Dessiner l'écran de jeu
         surface.fill(WHITE)
-        draw_grid(surface)  # Dessiner le cadrillage
-        snake.draw(surface)
-        food.draw(surface)
-        
-        # Afficher le score et le meilleur score
-        draw_score(surface, score, best_score)
+        draw_grid(surface)
+        snake.draw(surface)  # Dessiner le serpent sur l'écran
+        food.draw(surface)   # Dessiner la nourriture sur l'écran
         
         screen.blit(surface, (0, 0))
         pygame.display.update()
         clock.tick(INITIAL_SPEED + snake.length // 3)
-
-def draw_score(surface, score, best_score):
-    font = pygame.font.SysFont(None, 36)
-    score_text = font.render(f"Score: {score}", True, (0, 0, 0))
-    best_score_text = font.render(f"Best: {best_score}", True, (0, 0, 0))
-    surface.blit(score_text, (10, 10))
-    surface.blit(best_score_text, (10, 50))
 
 def load_best_score():
     try:
