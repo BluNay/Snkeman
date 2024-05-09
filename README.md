@@ -5,3 +5,6 @@ Touches du jeu :
 Utilisez les touches directionnelles (haut, bas, gauche, droite) pour déplacer le serpent.
 Appuyez sur la touche "C" pour rejouer après avoir perdu.
 Appuyez sur la touche "Q" pour quitter le jeu.
+
+
+Le dossier save_py contient toutes les versions de la programmation du jeu, de la version 1 à 20.
